@@ -1,0 +1,41 @@
+<html>
+	<head>
+		<script type="text/javascript" src="./transport.js" ></script>
+		<script type="text/javascript" src="./channel.js" ></script>
+		<script type="text/javascript" src="./user.js" ></script>
+		<script type="text/javascript" src="./client.js" ></script>
+	</head>
+	<body>
+		<script type="text/javascript">
+			var ape = new APE('ape.home.efyx.io:6969');
+
+			ape.addEvent('mkChan', function(pipe) {
+				console.info('New channel', pipe.properties.name);
+			});
+
+			ape.addEvent('join', function(user, pipe) {
+				console.info('User joined channel ' + pipe.properties.name);
+				user.send('send', {'msg': 'Hello world'});
+			});
+
+			ape.addEvent('left', function(user, pipe) {
+				console.info('User left channel ' + pipe.properties.name);
+			});
+
+			ape.addEvent('onmessage', function(cmd, args, pipe) {
+				switch (cmd) {
+					case 'LOGIN':
+						console.info('Hello world');
+					break;
+					case 'DATA':
+						console.info('New data received ' + args.msg)
+					break;
+				}
+			});
+
+
+			ape.connect({'name': 'efyx'});
+			ape.join('foo');
+		</script>
+	</body>
+</html>
