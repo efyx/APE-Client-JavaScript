@@ -28,7 +28,7 @@ var APETransport = function(server, callback, options) {
 		}
 
 		//frame.setAttribute('src', 'http://' + server + '/?[{"cmd":"script", "params": {"domain":"efyx.io", "scripts": ["http://ape.home.efyx.io/v2/frame.js"]}}]');
-		frame.setAttribute('src', 'http://' + server + '/?[{"cmd":"frame", "params":{}}]');
+		frame.setAttribute('src', 'http://' + server + '/?[{"cmd":"frame"}]');
 
 		if ('addEventListener' in window) {
 			window.addEventListener('message', this.frameMessage.bind(this), 0);
