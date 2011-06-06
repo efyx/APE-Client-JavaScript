@@ -1,3 +1,5 @@
 Next generation for APE Client JavaScript. The aim of this client is to be light, fast and framework agnostic.
 
 This is a working draft, any comments are welcome.
+
+NOTE : To test this client you have to add the script APE-Server-Script/frame.js to your main.ape.js on the server side
