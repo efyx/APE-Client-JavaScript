@@ -7,32 +7,32 @@
 	</head>
 	<body>
 		<script type="text/javascript">
-			var ape = new APE('ape.home.efyx.io:6969');
+			var events = {
+				'mkChan':	function(pipe) {
+					console.info('New channel', pipe.properties.name);
+				},
 
-			ape.addEvent('mkChan', function(pipe) {
-				console.info('New channel', pipe.properties.name);
-			});
+				'join': function(user, pipe) {
+					console.info('User joined channel ' + pipe.properties.name);
+					user.send('send', {'msg': 'Hello world'});
+				},
 
-			ape.addEvent('join', function(user, pipe) {
-				console.info('User joined channel ' + pipe.properties.name);
-				user.send('send', {'msg': 'Hello world'});
-			});
+				'left': function(user, pipe) {
+					console.info('User left channel ' + pipe.properties.name);
+				},
 
-			ape.addEvent('left', function(user, pipe) {
-				console.info('User left channel ' + pipe.properties.name);
-			});
-
-			ape.addEvent('message', function(cmd, args, pipe) {
-				switch (cmd) {
-					case 'LOGIN':
-						console.info('Hello world');
-					break;
-					case 'DATA':
-						console.info('New data received ' + args.msg)
-					break;
+				'message': function(cmd, args, pipe) {
+					switch (cmd) {
+						case 'LOGIN':
+							console.info('Hello world');
+						break;
+						case 'DATA':
+							console.info('New data received ' + args.msg)
+						break;
+					}
 				}
-			});
-
+			}
+			var ape = new APE('ape.home.efyx.io:6969', events);
 
 			ape.connect({'name': 'efyx'});
 			ape.join('foo');

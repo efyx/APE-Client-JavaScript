@@ -1,4 +1,4 @@
-function APE(server, options, events) {
+function APE(server, events, options) {
 	this.options = {
 		'poll': 25000,
 	}
@@ -9,9 +9,7 @@ function APE(server, options, events) {
 	this.user = {};
 	this.pipes = {};
 
-	for (var i in events) {
-		if (events.hasOwnProperty(i)) this.addEvent(i, events[i]);
-	}
+	this.addEvents(events);
 
 	var cb = {
 		'onmessage': this.onMessage.bind(this)
@@ -25,6 +23,12 @@ APE.prototype.fireEvent = function(ev, args) {
 	if (!(args instanceof Array)) args = [args];
 	for (var i in this.ev[ev]) {
 		if (this.ev[ev].hasOwnProperty(i)) this.ev[ev][i].apply(null, args);
+	}
+}
+
+APE.prototype.addEvents = function(ev) {
+	for (var p in ev) {
+		this.addEvent(p, ev[p]);
 	}
 }
 
