@@ -23,7 +23,9 @@ function APE(server, options, events) {
 APE.prototype.fireEvent = function(ev, args) {
 	ev = ev.toLowerCase();
 	if (!(args instanceof Array)) args = [args];
-	for (var i in this.ev[ev]) if (this.ev[ev].hasOwnProperty(i)) this.ev[ev][i].apply(null, args);
+	for (var i in this.ev[ev]) {
+		if (this.ev[ev].hasOwnProperty(i)) this.ev[ev][i].apply(null, args);
+	}
 }
 
 APE.prototype.addEvent = function(ev, fn) {
@@ -44,7 +46,7 @@ APE.prototype.onMessage = function(data) {
 	console.log('<=', data);
 
 	var cmd, args, pipe;
-	for (var i = 0; i < data.length; i++) {
+	for (var i = 0, l = data.length; i < l; i++) {
 		cmd = data[i].raw;
 		args = data[i].data;
 		pipe = null;
@@ -54,31 +56,27 @@ APE.prototype.onMessage = function(data) {
 			case 'LOGIN':
 				this.state = 1;
 				this.user.sessid = args.sessid;
-				this.fireEvent('onready');
+				this.fireEvent('ready');
 				this.poll();
 			break;
 			case 'CHANNEL':
-				if (typeof APEChannel != 'undefined') {
-					pipe = new APEChannel(args.pipe, this);
-					this.pipes[pipe.pubid] = pipe;
-					this.fireEvent('mkChan', pipe);
-				}
+				pipe = new APEChannel(args.pipe, this);
+				this.pipes[pipe.pubid] = pipe;
+				this.fireEvent('mkChan', pipe);
 
-				if (typeof APEUser != 'undefined') {
-					var u = args.users;
-					var user;
-					for (var i = 0; i < u.length; i++) {
-						user = this.pipes[u[i].pubid]
-						if (!user) {
-							user = new APEUser(u[i], this);
-							this.pipes[user.pubid] = user;
-						}
-
-						user.channels[pipe.pubid] = pipe;
-						pipe.users[user.pubid] = user;
-
-						this.fireEvent('join', [user, pipe]);
+				var u = args.users;
+				var user;
+				for (var i = 0; i < u.length; i++) {
+					user = this.pipes[u[i].pubid]
+					if (!user) {
+						user = new APEUser(u[i], this);
+						this.pipes[user.pubid] = user;
 					}
+
+					user.channels[pipe.pubid] = pipe;
+					pipe.users[user.pubid] = user;
+
+					this.fireEvent('join', [user, pipe]);
 				}
 			break;
 			case 'JOIN':
@@ -86,7 +84,7 @@ APE.prototype.onMessage = function(data) {
 				pipe = this.pipes[args.pipe.pubid];
 
 				if (!user) {
-					user = new APEUser(args.user);
+					user = new APEUser(args.user, this);
 					this.pipes[user.pubid] = user;
 				} 
 				user.channels[pipe.pubid] = user;
@@ -113,7 +111,7 @@ APE.prototype.onMessage = function(data) {
 
 		if (this.transport.id == 0 && cmd != 'ERR' && this.transport.state == 1) this.send('CHECK');
 
-		this.fireEvent('onmessage', [cmd, args, pipe]);
+		this.fireEvent('message', [cmd, args, pipe]);
 	}
 }
 
@@ -146,7 +144,7 @@ APE.prototype.send = function(cmd, args, pipe, callback) {
 		}
 		this.chl++;
 	} else {
-		this.addEvent('onready', this.send.bind(this, cmd, args));
+		this.addEvent('ready', this.send.bind(this, cmd, args));
 	}
 }
 
@@ -164,7 +162,7 @@ APE.prototype.join = function(channel) {
 
 if (Function.prototype.bind == null) {
 	//Bind function by webreflection.blogspot.com - MIT Style License 
-    Function.prototype.bind = (function (slice){
+	Function.prototype.bind = (function (slice){
 		function bind(context) {
 			var self = this; 
 			if (1 < arguments.length) {

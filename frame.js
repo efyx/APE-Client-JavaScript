@@ -1,38 +1,4 @@
-var APE = function() {
-	this.server = window.location.host;
-	this.settings = {};
-	this.stack = [];
-	this.transport = this.getTransport();
-	if (!this.transport) throw "No transport supported; Sorry.";
-
-	var tmp = window.location.hash.substr(1).split('&');
-	for (var i = 0; i < tmp.length; i++) {
-		this.settings[i] = tmp[i];
-	}
-
-	if ('addEventListener' in window) {
-		window.addEventListener('message', this.onMessage.bind(this), 0);
-	} else {
-		window.attachEvent('onmessage', this.onMessage);
-	}
-}
-
-APE.prototype.error = function() {
-	console.log('error');
-}
-
-APE.prototype.onMessage = function(ev) {
-	this.request = new this.transport();
-	this.request.onreadystatechange = this.onreadystatechange.bind(this);
-	this.request.open('POST', 'http://' + this.server + '/0/?', true);
-	this.request.send(ev.data);
-}
-APE.prototype.onreadystatechange = function() {
-	if (this.request.readyState == 4) {
-		this.postMessage(this.request.responseText);
-	}
-}
-APE.prototype.getTransport = function() {
+function getTransport() {
 	if ('XMLHttpRequest' in window) return XMLHttpRequest;
     if ('ActiveXObject' in window) {
         var names = [
@@ -49,10 +15,27 @@ APE.prototype.getTransport = function() {
     }
     return false; // non supporté
 }
-
-APE.prototype.postMessage = function(str) {
+function onMessage(ev) {
+	request = new transport();
+	request.onreadystatechange = onreadystatechange;
+	request.open('POST', 'http://' + server + '/0/?', true);
+	request.send(ev.data);
+}
+function onreadystatechange() {
+	if (request.readyState == 4) postMessage(request.responseText);
+}
+function postMessage(str) {
 	window.parent.postMessage(str, '*');
 }
 
 
-new APE();
+var request;
+var server = window.location.host;
+var transport = getTransport();
+if (!transport) throw "No transport supported; Sorry."
+
+if ('addEventListener' in window) {
+	window.addEventListener('message', onMessage, 0);
+} else {
+	window.attachEvent('onmessage', onMessage);
+}

@@ -11,7 +11,7 @@ var APETransport = function(server, callback, options) {
 			else this.stack.push(str);
 		}.bind(this);
 
-		ws.onopen = APETransport.prototype.onLoad;
+		ws.onopen = APETransport.prototype.onLoad.bind(this);
 
 		ws.onmessage = function(ev) {
 			callback.onmessage(ev.data);
@@ -27,7 +27,8 @@ var APETransport = function(server, callback, options) {
 			width = height = '1px';
 		}
 
-		frame.setAttribute('src', 'http://' + server + '/?[{"cmd":"script", "params": {"domain":"efyx.io", "scripts": ["http://ape.home.efyx.io/v2/frame.js"]}}]');
+		//frame.setAttribute('src', 'http://' + server + '/?[{"cmd":"script", "params": {"domain":"efyx.io", "scripts": ["http://ape.home.efyx.io/v2/frame.js"]}}]');
+		frame.setAttribute('src', 'http://' + server + '/?[{"cmd":"frame", "params":{}}]');
 
 		if ('addEventListener' in window) {
 			window.addEventListener('message', this.frameMessage.bind(this), 0);

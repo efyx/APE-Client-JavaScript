@@ -22,7 +22,7 @@
 				console.info('User left channel ' + pipe.properties.name);
 			});
 
-			ape.addEvent('onmessage', function(cmd, args, pipe) {
+			ape.addEvent('message', function(cmd, args, pipe) {
 				switch (cmd) {
 					case 'LOGIN':
 						console.info('Hello world');
